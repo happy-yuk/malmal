@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "65716277649",
+    "project_id": "malmal-f11e9",
+    "storage_bucket": "malmal-f11e9.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:65716277649:android:f3699044153a4089d50a30",
+        "android_client_info": {
+          "package_name": "com.example.malmal"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC581ohjq-XnRnjQxcpPbhKw208yMDFcTQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
