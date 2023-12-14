@@ -31,6 +31,10 @@ public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding binding;
     private static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 1;
     private static final int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 2;
+    private enum Mode { RECEIVER1, RECEIVER2 }
+    private Mode currentMode = Mode.RECEIVER1;
+    private ReceiverCameraObserver receiver1;
+    private ReceiverCameraObserver receiver2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
