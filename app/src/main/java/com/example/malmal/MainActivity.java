@@ -7,12 +7,13 @@ import com.google.android.material.snackbar.Snackbar;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.os.Handler;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.core.view.WindowCompat;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -41,6 +42,9 @@ public class MainActivity extends AppCompatActivity {
         } catch (IllegalStateException e) {
             Log.e("FirebaseInit", "FirebaseApp is not initialized.", e);
         }
+
+        SenderCameraObserver observer = new SenderCameraObserver(new Handler(), getApplicationContext());
+        getContentResolver().registerContentObserver(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, true,observer);
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
@@ -91,6 +95,7 @@ public class MainActivity extends AppCompatActivity {
         return NavigationUI.navigateUp(navController, appBarConfiguration)
                 || super.onSupportNavigateUp();
     }
+
 
     public void checkPermissionRead() {
         if (ContextCompat.checkSelfPermission(this,
