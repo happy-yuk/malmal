@@ -59,6 +59,9 @@ public class SenderCameraObserver extends ContentObserver {
         try {
             Bitmap originalBitmap = getBitmapFromUri(selectedImageUri, context);
             Bitmap resizedBitmap = resizeImageToMaxSize(originalBitmap, 1024);
+
+
+
             Uri resizedImageUri = saveBitmapAndGetUri(resizedBitmap, context);
 
             String filename = "image_" + System.currentTimeMillis();

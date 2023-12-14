@@ -19,6 +19,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Arrays;
 import java.util.Map;
 
 
@@ -47,9 +48,9 @@ class SceneSegementation{
 
     }
 
-    public void inference() throws IOException {
+    public double[] inference(Bitmap bitmap) throws IOException {
         Log.d("SceneSegmentation", "inference started");
-        bitmap = BitmapFactory.decodeStream(context.getAssets().open("deeplab.jpg"));
+
         final Tensor inputTensor = TensorImageUtils.bitmapToFloat32Tensor(bitmap,
                 TensorImageUtils.TORCHVISION_NORM_MEAN_RGB,
                 TensorImageUtils.TORCHVISION_NORM_STD_RGB);
@@ -81,18 +82,24 @@ class SceneSegementation{
 
             }
         }
-        int size = width * height;
+        double size = width * height;
         for (int i = 0; i < 21; i++){
             score[i] = count[i]/size;
-            Log.d("SceneSegmentation", String.valueOf(score[i]));
+
         }
+
+        String[] stringArray = new String[score.length];
+        for (int i = 0; i < score.length; i++) {
+            stringArray[i] = String.valueOf(score[i]);
+        }
+
 
         //Bitmap bmpSegmentation = Bitmap.createScaledBitmap(bitmap, width, height, true);
         //Bitmap outputBitmap = bmpSegmentation.copy(bmpSegmentation.getConfig(), true);
         //outputBitmap.setPixels(intValues, 0, outputBitmap.getWidth(), 0, 0, outputBitmap.getWidth(), outputBitmap.getHeight());
-        Log.d("SceneSegmentation", arrayToString(score));
+        Log.d("SceneSegmentation", Arrays.toString(stringArray));
 
-
+        return score;
 
 
     }
