@@ -34,7 +34,6 @@ import java.util.Map;
 public class SenderCameraObserver extends ContentObserver {
     private Context context;
     private long lastProcessedTimestamp = 0;
-    private static final long DELAY = 1000; // 1초 지연
     private long SOME_THRESHOLD = 3000;
     public SenderCameraObserver(Handler handler, Context context) {
         super(handler);
@@ -45,10 +44,12 @@ public class SenderCameraObserver extends ContentObserver {
     public void onChange(boolean selfChange, Uri uri) {
         super.onChange(selfChange, uri);
         long currentTimestamp = System.currentTimeMillis();
-        Log.d("SenderCameraObserver", "Media change detected: " + uri.toString());
-        lastProcessedTimestamp = currentTimestamp;
-        // sendPicToServer 내부에서 모델 적용하기
-        sendPicToServer(context);
+        if (currentTimestamp - lastProcessedTimestamp > SOME_THRESHOLD) {
+            Log.d("SenderCameraObserver", "Media change detected: " + uri.toString());
+            lastProcessedTimestamp = currentTimestamp;
+            // sendPicToServer 내부에서 모델 적용하기
+            sendPicToServer(context);
+        }
     }
 
     public void sendPicToServer(Context context) {

@@ -172,6 +172,4 @@ public class SenderFragment extends Fragment {
             return null;
         }
     }
-
-
 }

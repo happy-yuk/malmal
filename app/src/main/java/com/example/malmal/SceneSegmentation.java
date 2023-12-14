@@ -24,7 +24,7 @@ import java.util.Map;
 
 
 
-class SceneSegementation{
+class SceneSegmentation {
     int[] count = new int[21];
     double[] score = new double[21];
     private Context context;

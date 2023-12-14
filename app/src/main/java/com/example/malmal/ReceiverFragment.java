@@ -2,6 +2,7 @@ package com.example.malmal;
 
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,6 +24,8 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
+
+import java.io.File;
 
 public class ReceiverFragment extends Fragment {
 
@@ -52,6 +55,9 @@ public class ReceiverFragment extends Fragment {
         binding.buttonGet.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                File downloadsFolder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+                File naverMyBoxFolder = new File(downloadsFolder, "NAVER MYBOX");
+
                 getPicFromServer();
             }
         });
@@ -87,16 +93,6 @@ public class ReceiverFragment extends Fragment {
                             // 오류 처리
                         }
                     });
-
-
-//                    Log.d("getPicFromServer", ""+imagePath);
-//
-//                    FirebaseStorage storage = FirebaseStorage.getInstance();
-//                    StorageReference imageRef = storage.getReference(imagePath);
-//                    Glide.with(getContext())
-//                            .load(imageRef)
-//                            .into(binding.receivedImage);
-//
                 }
             }
 
@@ -111,4 +107,7 @@ public class ReceiverFragment extends Fragment {
         Picasso.get().load(imageUrl).transform(new RotateTransformation(90)).into(binding.receivedImage);
     }
 
+    private void initialize(Uri pathname) {
+
+    }
 }

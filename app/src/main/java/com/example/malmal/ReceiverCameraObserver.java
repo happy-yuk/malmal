@@ -69,7 +69,7 @@ public class ReceiverCameraObserver extends ContentObserver {
 
     public void savePicOnLocal(Context context, String imageName, double[] feature) {
         // replace above line to the model application code
-        updateData(context, "malmal_preprocessed_array.json", "imagePath", imageName,"feature", feature);
+        updateData(context, "test_1.json", "imagePath", imageName,"feature", feature);
     }
 
     public void updateData(Context context, String filename, String newLabel1, String newData1, String newLabel2, double[] newData2) {
@@ -122,6 +122,4 @@ public class ReceiverCameraObserver extends ContentObserver {
         }
         return null;
     }
-
-
 }
