@@ -52,5 +52,7 @@ dependencies {
     implementation("com.google.firebase:firebase-storage:20.3.0")
     implementation("com.google.firebase:firebase-database:20.3.0")
     implementation("com.firebaseui:firebase-ui-storage:8.0.0")
+
+    implementation ("org.pytorch:pytorch_android_torchvision:1.13.1")
 }
 apply(plugin = "com.google.gms.google-services")
