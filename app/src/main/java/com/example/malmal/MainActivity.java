@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 2;
     private enum Mode { RECEIVER1, RECEIVER2 }
     private Mode currentMode = Mode.RECEIVER1;
-    private ReceiverCameraObserver receiver1;
+    private SenderCameraObserver receiver1;
     private ReceiverCameraObserver receiver2;
 
     @Override
@@ -46,6 +46,8 @@ public class MainActivity extends AppCompatActivity {
         } catch (IllegalStateException e) {
             Log.e("FirebaseInit", "FirebaseApp is not initialized.", e);
         }
+//        receiver1 = new SenderCameraObserver(new Handler(), this);
+//        receiver2 = new ReceiverCameraObserver(new Handler(), this);
 
         SenderCameraObserver observer = new SenderCameraObserver(new Handler(), getApplicationContext());
         getContentResolver().registerContentObserver(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, true,observer);
