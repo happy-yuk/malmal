@@ -1,5 +1,6 @@
 package com.example.malmal;
 
+import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -25,7 +26,16 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 
 public class ReceiverFragment extends Fragment {
 
@@ -55,9 +65,7 @@ public class ReceiverFragment extends Fragment {
         binding.buttonGet.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                File downloadsFolder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-                File naverMyBoxFolder = new File(downloadsFolder, "NAVER MYBOX");
-
+                initialize();
                 getPicFromServer();
             }
         });
@@ -107,7 +115,79 @@ public class ReceiverFragment extends Fragment {
         Picasso.get().load(imageUrl).transform(new RotateTransformation(90)).into(binding.receivedImage);
     }
 
-    private void initialize(Uri pathname) {
+    private void initialize() {
+        File downloadsFolder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+        File naverMyBoxFolder = new File(downloadsFolder, "NAVER MYBOX");
+        updatePhotosInfo(getContext(), naverMyBoxFolder, "test_1.json");
 
+    }
+
+    public void updatePhotosInfo(Context context, File directory, String jsonFilename) {
+        File[] files = directory.listFiles();
+        if (files != null) {
+            for (File file : files) {
+                if (file.isFile()) {
+                    String imagePath = file.getAbsolutePath();
+                    double[] dummyFeature = new double[] {1.0};
+                    updateData(context, jsonFilename, "imagePath", imagePath, "feature", dummyFeature);
+                }
+            }
+        }
+    }
+
+    private boolean isImageFile(String fileName) {
+        String lowerCaseName = fileName.toLowerCase();
+        return lowerCaseName.endsWith(".jpg") || lowerCaseName.endsWith(".jpeg") || lowerCaseName.endsWith(".png");
+    }
+
+    public void updateData(Context context, String filename, String newLabel1, String newData1, String newLabel2, double[] newData2) {
+        try {
+            // 기존 JSON 데이터 불러오기
+            JSONArray dataArray = loadData(context, filename);
+            if (dataArray == null) {
+                dataArray = new JSONArray();
+            }
+            System.out.println(dataArray.toString(4)); // Prints the JSON Object with indentation for readability
+            // 새 엔트리 생성
+            JSONObject newEntry = new JSONObject();
+            newEntry.put(newLabel1, newData1);
+            newEntry.put(newLabel2, newData2);
+
+            // 엔트리를 JSONArray에 추가
+            dataArray.put(newEntry);
+
+            // 업데이트된 데이터 저장
+            saveData(context, filename, dataArray);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void saveData(Context context, String filename, JSONArray data) {
+        try {
+            FileOutputStream fos = context.openFileOutput(filename, Context.MODE_PRIVATE);
+            fos.write(data.toString().getBytes());
+            fos.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    public JSONArray loadData(Context context, String filename) {
+        try {
+            FileInputStream fis = context.openFileInput(filename);
+            InputStreamReader isr = new InputStreamReader(fis);
+            BufferedReader bufferedReader = new BufferedReader(isr);
+            StringBuilder sb = new StringBuilder();
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+                sb.append(line);
+            }
+            fis.close();
+            return new JSONArray(sb.toString());
+        } catch (IOException | JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }
