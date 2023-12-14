@@ -1,6 +1,8 @@
 package com.example.malmal;
 
+import android.content.ContentResolver;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
 
 import com.google.android.material.snackbar.Snackbar;
@@ -24,6 +26,8 @@ import com.google.firebase.FirebaseApp;
 
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -31,10 +35,10 @@ public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding binding;
     private static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 1;
     private static final int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 2;
-    private enum Mode { RECEIVER1, RECEIVER2 }
-    private Mode currentMode = Mode.RECEIVER1;
-    private SenderCameraObserver receiver1;
-    private ReceiverCameraObserver receiver2;
+    private enum Mode { SENDER, RECEIVER }
+    private Mode currentMode = Mode.SENDER;
+    private SenderCameraObserver sender;
+    private ReceiverCameraObserver receiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,11 +50,8 @@ public class MainActivity extends AppCompatActivity {
         } catch (IllegalStateException e) {
             Log.e("FirebaseInit", "FirebaseApp is not initialized.", e);
         }
-//        receiver1 = new SenderCameraObserver(new Handler(), this);
-//        receiver2 = new ReceiverCameraObserver(new Handler(), this);
-
-        SenderCameraObserver observer = new SenderCameraObserver(new Handler(), getApplicationContext());
-        getContentResolver().registerContentObserver(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, true,observer);
+        sender = new SenderCameraObserver(new Handler(), this);
+        receiver = new ReceiverCameraObserver(new Handler(), this);
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
@@ -60,7 +61,6 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
         appBarConfiguration = new AppBarConfiguration.Builder(navController.getGraph()).build();
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
-
         binding.fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -69,6 +69,21 @@ public class MainActivity extends AppCompatActivity {
                         .setAction("Action", null).show();
             }
         });
+
+        RadioGroup radioGroup = binding.radioGroup;
+        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                if (checkedId == R.id.senderButton) {
+                    setReceiverMode(Mode.SENDER);
+                } else {
+                    setReceiverMode(Mode.RECEIVER);
+                }
+            }
+        });
+        setReceiverMode(Mode.SENDER);
+        ((RadioButton) binding.senderButton).setChecked(true);
+
         checkPermissionRead();
         checkPermissionWrite();
     }
@@ -122,6 +137,21 @@ public class MainActivity extends AppCompatActivity {
                     new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE},
                     MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
         }
+    }
+    private void toggleMode() {
+        currentMode = (currentMode == Mode.SENDER) ? Mode.RECEIVER : Mode.SENDER;
+        setReceiverMode(currentMode);
+    }
+    private void setReceiverMode(Mode mode) {
+        ContentResolver contentResolver = getContentResolver();
+        Uri uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
 
+        if (mode == Mode.SENDER) {
+            contentResolver.registerContentObserver(uri, true, sender);
+            contentResolver.unregisterContentObserver(receiver);
+        } else {
+            contentResolver.registerContentObserver(uri, true, receiver);
+            contentResolver.unregisterContentObserver(sender);
+        }
     }
 }

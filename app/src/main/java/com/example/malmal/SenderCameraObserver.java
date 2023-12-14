@@ -49,7 +49,7 @@ public class SenderCameraObserver extends ContentObserver {
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    Log.d("MediaContentObserver", "Media change detected: " + uri.toString());
+                    Log.d("SenderCameraObserver", "Media change detected: " + uri.toString());
                     lastProcessedTimestamp = currentTimestamp;
                     // sendPicToServer 내부에서 모델 적용하기
                     sendPicToServer(context);
