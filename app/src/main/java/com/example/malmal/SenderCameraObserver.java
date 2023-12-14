@@ -45,17 +45,10 @@ public class SenderCameraObserver extends ContentObserver {
     public void onChange(boolean selfChange, Uri uri) {
         super.onChange(selfChange, uri);
         long currentTimestamp = System.currentTimeMillis();
-        if (currentTimestamp - lastProcessedTimestamp > SOME_THRESHOLD) {
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    Log.d("SenderCameraObserver", "Media change detected: " + uri.toString());
-                    lastProcessedTimestamp = currentTimestamp;
-                    // sendPicToServer 내부에서 모델 적용하기
-                    sendPicToServer(context);
-                }
-            }, DELAY);
-        }
+        Log.d("SenderCameraObserver", "Media change detected: " + uri.toString());
+        lastProcessedTimestamp = currentTimestamp;
+        // sendPicToServer 내부에서 모델 적용하기
+        sendPicToServer(context);
     }
 
     public void sendPicToServer(Context context) {

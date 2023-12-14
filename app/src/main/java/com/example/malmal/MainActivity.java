@@ -29,8 +29,11 @@ import android.view.MenuItem;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
+import java.io.IOException;
+
 public class MainActivity extends AppCompatActivity {
 
+    private SceneSegementation sceneSegementation;
     private AppBarConfiguration appBarConfiguration;
     private ActivityMainBinding binding;
     private static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 1;
@@ -61,6 +64,15 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
         appBarConfiguration = new AppBarConfiguration.Builder(navController.getGraph()).build();
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
+
+        sceneSegementation = new SceneSegementation();
+        sceneSegementation.initialize(this);
+        try {
+            sceneSegementation.inference();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         binding.fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
