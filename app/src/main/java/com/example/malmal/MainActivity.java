@@ -67,11 +67,7 @@ public class MainActivity extends AppCompatActivity {
 
         sceneSegmentation = new SceneSegmentation();
         sceneSegmentation.initialize(this);
-        try {
-            sceneSegmentation.inference();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+
 
         binding.fab.setOnClickListener(new View.OnClickListener() {
             @Override
