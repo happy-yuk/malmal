@@ -33,7 +33,7 @@ import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity {
 
-    private SceneSegementation sceneSegementation;
+    private SceneSegmentation sceneSegmentation;
     private AppBarConfiguration appBarConfiguration;
     private ActivityMainBinding binding;
     private static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 1;
@@ -65,10 +65,10 @@ public class MainActivity extends AppCompatActivity {
         appBarConfiguration = new AppBarConfiguration.Builder(navController.getGraph()).build();
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
 
-        sceneSegementation = new SceneSegementation();
-        sceneSegementation.initialize(this);
+        sceneSegmentation = new SceneSegmentation();
+        sceneSegmentation.initialize(this);
         try {
-            sceneSegementation.inference();
+            sceneSegmentation.inference();
         } catch (IOException e) {
             e.printStackTrace();
         }
