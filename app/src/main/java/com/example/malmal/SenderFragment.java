@@ -61,7 +61,7 @@ public class SenderFragment extends Fragment {
                         .navigate(R.id.action_FirstFragment_to_SecondFragment);
             }
         });
-        binding.buttonGallery.setOnClickListener(new View.OnClickListener() {
+        binding.buttonGet.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Log.d("Gallery", "tired");

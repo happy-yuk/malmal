@@ -46,6 +46,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        checkPermissionRead();
+
+        checkPermissionWrite();
         try {
             FirebaseApp.initializeApp(this);
             FirebaseApp app = FirebaseApp.getInstance();
@@ -65,8 +69,7 @@ public class MainActivity extends AppCompatActivity {
         appBarConfiguration = new AppBarConfiguration.Builder(navController.getGraph()).build();
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
 
-        sceneSegmentation = new SceneSegmentation();
-        sceneSegmentation.initialize(this);
+
 
 
         binding.fab.setOnClickListener(new View.OnClickListener() {
@@ -92,8 +95,6 @@ public class MainActivity extends AppCompatActivity {
         setReceiverMode(Mode.SENDER);
         ((RadioButton) binding.senderButton).setChecked(true);
 
-        checkPermissionRead();
-        checkPermissionWrite();
     }
 
     @Override
@@ -127,6 +128,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     public void checkPermissionRead() {
+
         if (ContextCompat.checkSelfPermission(this,
                 android.Manifest.permission.READ_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -134,9 +136,11 @@ public class MainActivity extends AppCompatActivity {
             ActivityCompat.requestPermissions(this,
                     new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE},
                     MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
+            Log.d("Check Permission", "done");
         }
     }
     public void checkPermissionWrite() {
+        Log.d("Check Permission", "done");
         if (ContextCompat.checkSelfPermission(this,
                 android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
