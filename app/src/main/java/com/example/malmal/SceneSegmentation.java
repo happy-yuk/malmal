@@ -19,14 +19,16 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
-
+import java.util.stream.Collectors;
 
 
 class SceneSegmentation {
     int[] count = new int[21];
-    double[] score = new double[21];
+    List<Double> scoreList = new ArrayList<>();
     private Context context;
     Module module = null;
     //Bitmap bitmap = null;
@@ -48,14 +50,14 @@ class SceneSegmentation {
 
     }
 
-    public double[] inference(Bitmap bitmap) throws IOException {
+    public List<Double> inference(Bitmap bitmap) throws IOException {
         Log.d("SceneSegmentation", "inference started");
        // Bitmap bitmap = BitmapFactory.decodeStream(context.getAssets().open("deeplab.jpg"));
         final Tensor inputTensor = TensorImageUtils.bitmapToFloat32Tensor(bitmap,
                 TensorImageUtils.TORCHVISION_NORM_MEAN_RGB,
                 TensorImageUtils.TORCHVISION_NORM_STD_RGB);
         final float[] inputs = inputTensor.getDataAsFloatArray();
-        Log.d("SceneSegmentation", "model forward started");
+
         Map<String, IValue> outTensors =
                 module.forward(IValue.from(inputTensor)).toDictStringKey();
 
@@ -84,22 +86,24 @@ class SceneSegmentation {
         }
         double size = width * height;
         for (int i = 0; i < 21; i++){
-            score[i] = count[i]/size;
+            double temp = count[i]/size;
+            scoreList.add(temp);
+
 
         }
 
-        String[] stringArray = new String[score.length];
-        for (int i = 0; i < score.length; i++) {
-            stringArray[i] = String.valueOf(score[i]);
-        }
+        String scoreString = scoreList.stream()
+                .map(Object::toString)
+                .collect(Collectors.joining(","));
+
 
 
         //Bitmap bmpSegmentation = Bitmap.createScaledBitmap(bitmap, width, height, true);
         //Bitmap outputBitmap = bmpSegmentation.copy(bmpSegmentation.getConfig(), true);
         //outputBitmap.setPixels(intValues, 0, outputBitmap.getWidth(), 0, 0, outputBitmap.getWidth(), outputBitmap.getHeight());
-        Log.d("SceneSegmentation", Arrays.toString(stringArray));
+        Log.d("SceneSegmentation",scoreString);
 
-        return score;
+        return scoreList;
 
 
     }

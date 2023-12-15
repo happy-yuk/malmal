@@ -29,12 +29,13 @@ import java.io.FileDescriptor;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class SenderCameraObserver extends ContentObserver {
     private Context context;
     private long lastProcessedTimestamp = 0;
-    private long SOME_THRESHOLD = 3000;
+    private long SOME_THRESHOLD = 60000;
 
     private SceneSegmentation sceneSegmentation = new SceneSegmentation();
 
@@ -51,6 +52,7 @@ public class SenderCameraObserver extends ContentObserver {
             Log.d("SenderCameraObserver", "Media change detected: " + uri.toString());
             lastProcessedTimestamp = currentTimestamp;
             // sendPicToServer 내부에서 모델 적용하기
+            Log.d("snedPicToServer", "Enter sendPicToServer");
             sendPicToServer(context);
         }
     }
@@ -67,8 +69,8 @@ public class SenderCameraObserver extends ContentObserver {
             Bitmap bitmap = BitmapFactory.decodeStream(context
                     .getContentResolver().openInputStream(selectedImageUri));
             Bitmap bitmapResized = Bitmap.createScaledBitmap(bitmap, 256, 256, false);
-            sceneSegmentation.initialize(context);
-            double [] score = sceneSegmentation.inference(bitmapResized);
+            //sceneSegmentation.initialize(context);
+            List<Double> score = sceneSegmentation.inference(bitmapResized);
 
             Uri resizedImageUri = saveBitmapAndGetUri(resizedBitmap, context);
 
