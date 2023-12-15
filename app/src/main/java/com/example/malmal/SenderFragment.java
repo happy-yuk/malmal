@@ -19,7 +19,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
-import com.example.malmal.databinding.FragmentFirstBinding;
+import com.example.malmal.databinding.FragmentSenderBinding;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DatabaseReference;
@@ -38,7 +38,7 @@ import java.util.Map;
 
 public class SenderFragment extends Fragment {
 
-    private FragmentFirstBinding binding; // 처음 만들어 질 때의 이름이 FirstFragment였는데, 이 부분은 수정이 안 됨
+    private FragmentSenderBinding binding; // 처음 만들어 질 때의 이름이 FirstFragment였는데, 이 부분은 수정이 안 됨
     private ActivityResultLauncher<String> mGetContent;
 
     @Override
@@ -47,7 +47,7 @@ public class SenderFragment extends Fragment {
             Bundle savedInstanceState
     ) {
 
-        binding = FragmentFirstBinding.inflate(inflater, container, false);
+        binding = FragmentSenderBinding.inflate(inflater, container, false);
         return binding.getRoot();
     }
 

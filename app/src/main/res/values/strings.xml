@@ -4,8 +4,8 @@
     <!-- Strings used for fragments for navigation -->
     <string name="first_fragment_label">Sender Fragment</string>
     <string name="second_fragment_label">Receiver Fragment</string>
-    <string name="next">Next</string>
-    <string name="previous">Previous</string>
+    <string name="next">To Receiver Page</string>
+    <string name="previous">To Sender Page</string>
 
     <string name="lorem_ipsum">
         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam in scelerisque sem. Mauris

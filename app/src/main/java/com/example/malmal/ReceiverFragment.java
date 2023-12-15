@@ -13,7 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
-import com.example.malmal.databinding.FragmentSecondBinding;
+import com.example.malmal.databinding.FragmentReceiverBinding;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
@@ -39,7 +39,7 @@ import java.io.InputStreamReader;
 
 public class ReceiverFragment extends Fragment {
 
-    private FragmentSecondBinding binding;
+    private FragmentReceiverBinding binding;
 
     @Override
     public View onCreateView(
@@ -47,7 +47,7 @@ public class ReceiverFragment extends Fragment {
             Bundle savedInstanceState
     ) {
 
-        binding = FragmentSecondBinding.inflate(inflater, container, false);
+        binding = FragmentReceiverBinding.inflate(inflater, container, false);
         return binding.getRoot();
 
     }
@@ -129,6 +129,7 @@ public class ReceiverFragment extends Fragment {
                 if (file.isFile()) {
                     String imagePath = file.getAbsolutePath();
                     double[] dummyFeature = new double[] {1.0};
+//                    double[] feature = ;
                     updateData(context, jsonFilename, "imagePath", imagePath, "feature", dummyFeature);
                 }
             }
@@ -147,7 +148,7 @@ public class ReceiverFragment extends Fragment {
             if (dataArray == null) {
                 dataArray = new JSONArray();
             }
-            System.out.println(dataArray.toString(4)); // Prints the JSON Object with indentation for readability
+//            System.out.println(dataArray.toString(4)); // Prints the JSON Object with indentation for readability
             // 새 엔트리 생성
             JSONObject newEntry = new JSONObject();
             newEntry.put(newLabel1, newData1);
