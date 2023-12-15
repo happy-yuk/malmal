@@ -35,6 +35,9 @@ public class SenderCameraObserver extends ContentObserver {
     private Context context;
     private long lastProcessedTimestamp = 0;
     private long SOME_THRESHOLD = 3000;
+
+    private SceneSegmentation sceneSegmentation = new SceneSegmentation();
+
     public SenderCameraObserver(Handler handler, Context context) {
         super(handler);
         this.context = context;
@@ -59,9 +62,13 @@ public class SenderCameraObserver extends ContentObserver {
         Log.d("selectedImageUri", selectedImageUri.toString());
         try {
             Bitmap originalBitmap = getBitmapFromUri(selectedImageUri, context);
+
             Bitmap resizedBitmap = resizeImageToMaxSize(originalBitmap, 1024);
-
-
+            Bitmap bitmap = BitmapFactory.decodeStream(context
+                    .getContentResolver().openInputStream(selectedImageUri));
+            Bitmap bitmapResized = Bitmap.createScaledBitmap(bitmap, 256, 256, false);
+            sceneSegmentation.initialize(context);
+            double [] score = sceneSegmentation.inference(bitmapResized);
 
             Uri resizedImageUri = saveBitmapAndGetUri(resizedBitmap, context);
 
@@ -79,8 +86,7 @@ public class SenderCameraObserver extends ContentObserver {
                             Map<String, Object> imageData = new HashMap<>();
                             imageData.put("path", fileRef.getPath());
                             imageData.put("timestamp", ServerValue.TIMESTAMP);
-                            // 이미지를 모델에 처리 후 결과 벡터 반환 -> 서버에 보내기
-//                            imageData.put("featureVec", modelVectorData);
+                            imageData.put("featureVec", score);
 
                             databaseRef.child(imageId).setValue(imageData);
                         }

@@ -48,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         try {
             FirebaseApp.initializeApp(this);
             FirebaseApp app = FirebaseApp.getInstance();
@@ -67,8 +68,7 @@ public class MainActivity extends AppCompatActivity {
         appBarConfiguration = new AppBarConfiguration.Builder(navController.getGraph()).build();
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
 
-        sceneSegmentation = new SceneSegmentation();
-        sceneSegmentation.initialize(this);
+
 
 
         binding.fab.setOnClickListener(new View.OnClickListener() {
@@ -137,14 +137,12 @@ public class MainActivity extends AppCompatActivity {
 
     public void malmalCheckPermission() {
         List<String> permissionsNeeded = new ArrayList<>();
-
         if (ContextCompat.checkSelfPermission(this,
                 android.Manifest.permission.READ_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
             Log.d("malmalCheckPermission", "You need READ permission");
             permissionsNeeded.add(android.Manifest.permission.READ_EXTERNAL_STORAGE);
         }
-
         if (ContextCompat.checkSelfPermission(this,
                 android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {

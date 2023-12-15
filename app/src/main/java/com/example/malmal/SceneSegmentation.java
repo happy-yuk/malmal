@@ -29,7 +29,7 @@ class SceneSegmentation {
     double[] score = new double[21];
     private Context context;
     Module module = null;
-    Bitmap bitmap = null;
+    //Bitmap bitmap = null;
 
     private static final int CLASSNUM = 21;
     private static final int DOG = 12;
@@ -50,12 +50,12 @@ class SceneSegmentation {
 
     public double[] inference(Bitmap bitmap) throws IOException {
         Log.d("SceneSegmentation", "inference started");
-
+       // Bitmap bitmap = BitmapFactory.decodeStream(context.getAssets().open("deeplab.jpg"));
         final Tensor inputTensor = TensorImageUtils.bitmapToFloat32Tensor(bitmap,
                 TensorImageUtils.TORCHVISION_NORM_MEAN_RGB,
                 TensorImageUtils.TORCHVISION_NORM_STD_RGB);
         final float[] inputs = inputTensor.getDataAsFloatArray();
-
+        Log.d("SceneSegmentation", "model forward started");
         Map<String, IValue> outTensors =
                 module.forward(IValue.from(inputTensor)).toDictStringKey();
 
