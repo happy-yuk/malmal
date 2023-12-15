@@ -7,6 +7,7 @@ import android.os.Bundle;
 
 import com.google.android.material.snackbar.Snackbar;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Handler;
@@ -30,14 +31,15 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
     private SceneSegmentation sceneSegmentation;
     private AppBarConfiguration appBarConfiguration;
     private ActivityMainBinding binding;
-    private static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 1;
-    private static final int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 2;
+    private static final int MY_PERMISSIONS_REQUEST_STORAGE = 1;
     private enum Mode { SENDER, RECEIVER }
     private Mode currentMode = Mode.SENDER;
     private SenderCameraObserver sender;
@@ -92,8 +94,15 @@ public class MainActivity extends AppCompatActivity {
         setReceiverMode(Mode.SENDER);
         ((RadioButton) binding.senderButton).setChecked(true);
 
-        checkPermissionRead();
-        checkPermissionWrite();
+        malmalCheckPermission();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == MY_PERMISSIONS_REQUEST_STORAGE) {
+            // 권한 부여 상태 확인 및 처리
+        }
     }
 
     @Override
@@ -126,26 +135,30 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    public void checkPermissionRead() {
+    public void malmalCheckPermission() {
+        List<String> permissionsNeeded = new ArrayList<>();
+
         if (ContextCompat.checkSelfPermission(this,
                 android.Manifest.permission.READ_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
-
-            ActivityCompat.requestPermissions(this,
-                    new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE},
-                    MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
+            Log.d("malmalCheckPermission", "You need READ permission");
+            permissionsNeeded.add(android.Manifest.permission.READ_EXTERNAL_STORAGE);
         }
-    }
-    public void checkPermissionWrite() {
+
         if (ContextCompat.checkSelfPermission(this,
                 android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
+            Log.d("malmalCheckPermission", "You need WRITE permission");
+            permissionsNeeded.add(android.Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        }
 
+        if (!permissionsNeeded.isEmpty()) {
             ActivityCompat.requestPermissions(this,
-                    new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                    MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
+                    permissionsNeeded.toArray(new String[0]),
+                    MY_PERMISSIONS_REQUEST_STORAGE);
         }
     }
+
     private void toggleMode() {
         currentMode = (currentMode == Mode.SENDER) ? Mode.RECEIVER : Mode.SENDER;
         setReceiverMode(currentMode);
