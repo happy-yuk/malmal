@@ -20,6 +20,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
@@ -36,6 +37,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.List;
 
 public class ReceiverFragment extends Fragment {
 
@@ -65,7 +67,8 @@ public class ReceiverFragment extends Fragment {
         binding.buttonGet.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                initialize();
+                Log.d("get image", "onClick");
+//                initialize();
                 getPicFromServer();
             }
         });
@@ -76,6 +79,7 @@ public class ReceiverFragment extends Fragment {
         super.onDestroyView();
         binding = null;
     }
+
     public void getPicFromServer() {
         FirebaseDatabase database = FirebaseDatabase.getInstance("https://malmal-f11e9-default-rtdb.asia-southeast1.firebasedatabase.app");
         DatabaseReference databaseRef = database.getReference("image_metadata");
@@ -85,6 +89,10 @@ public class ReceiverFragment extends Fragment {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot imageSnapshot : dataSnapshot.getChildren()) {
+                    GenericTypeIndicator<List<Double>> genericTypeIndicator = new GenericTypeIndicator<List<Double>>() {
+                    };
+                    List<Double> vector = imageSnapshot.child("featureVec").getValue(genericTypeIndicator);
+                    System.out.println(cosineSimilarity(vector, vector));
                     String imagePath = imageSnapshot.child("path").getValue(String.class);
                     FirebaseStorage storage = FirebaseStorage.getInstance();
                     StorageReference imageRef = storage.getReference().child(imagePath);
@@ -111,6 +119,7 @@ public class ReceiverFragment extends Fragment {
         });
 
     }
+
     private void loadImageWithPicasso(String imageUrl) {
         Picasso.get().load(imageUrl).transform(new RotateTransformation(90)).into(binding.receivedImage);
     }
@@ -119,7 +128,6 @@ public class ReceiverFragment extends Fragment {
         File downloadsFolder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
         File naverMyBoxFolder = new File(downloadsFolder, "NAVER MYBOX");
         updatePhotosInfo(getContext(), naverMyBoxFolder, "test_1.json");
-
     }
 
     public void updatePhotosInfo(Context context, File directory, String jsonFilename) {
@@ -128,7 +136,7 @@ public class ReceiverFragment extends Fragment {
             for (File file : files) {
                 if (file.isFile()) {
                     String imagePath = file.getAbsolutePath();
-                    double[] dummyFeature = new double[] {1.0};
+                    double[] dummyFeature = new double[]{1.0};
 //                    double[] feature = ;
                     updateData(context, jsonFilename, "imagePath", imagePath, "feature", dummyFeature);
                 }
@@ -174,6 +182,7 @@ public class ReceiverFragment extends Fragment {
             e.printStackTrace();
         }
     }
+
     public JSONArray loadData(Context context, String filename) {
         try {
             FileInputStream fis = context.openFileInput(filename);
@@ -190,5 +199,31 @@ public class ReceiverFragment extends Fragment {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public static double cosineSimilarity(List<Double> list1, List<Double> list2) {
+        if (list1 == null || list2 == null) {
+            throw new IllegalArgumentException("Lists cannot be null.");
+        }
+
+        if (list1.size() != list2.size()) {
+            throw new IllegalArgumentException("Lists must have the same length.");
+        }
+
+        double dotProduct = 0.0;
+        double normA = 0.0;
+        double normB = 0.0;
+
+        for (int i = 0; i < list1.size(); i++) {
+            dotProduct += list1.get(i) * list2.get(i);
+            normA += Math.pow(list1.get(i), 2);
+            normB += Math.pow(list2.get(i), 2);
+        }
+
+        if (normA == 0 || normB == 0) {
+            throw new IllegalArgumentException("One of the vectors is zero, cannot compute similarity.");
+        }
+
+        return dotProduct / (Math.sqrt(normA) * Math.sqrt(normB));
     }
 }
