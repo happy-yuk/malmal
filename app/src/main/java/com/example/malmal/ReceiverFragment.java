@@ -1,6 +1,8 @@
 package com.example.malmal;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -36,10 +38,13 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class ReceiverFragment extends Fragment {
-
+    private Context context;
     private FragmentReceiverBinding binding;
+    private SceneSegmentation sceneSegmentation = new SceneSegmentation();
 
     @Override
     public View onCreateView(
@@ -65,7 +70,11 @@ public class ReceiverFragment extends Fragment {
         binding.buttonGet.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                initialize();
+                try {
+                    initialize();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
                 getPicFromServer();
             }
         });
@@ -115,25 +124,36 @@ public class ReceiverFragment extends Fragment {
         Picasso.get().load(imageUrl).transform(new RotateTransformation(90)).into(binding.receivedImage);
     }
 
-    private void initialize() {
+    private void initialize() throws IOException {
         File downloadsFolder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
         File naverMyBoxFolder = new File(downloadsFolder, "NAVER MYBOX");
-        updatePhotosInfo(getContext(), naverMyBoxFolder, "test_1.json");
+        updatePhotosInfo(getContext(), naverMyBoxFolder, "test_2.json");
 
     }
 
-    public void updatePhotosInfo(Context context, File directory, String jsonFilename) {
+    public void updatePhotosInfo(Context context, File directory, String jsonFilename) throws IOException {
+        this.context = context;
         File[] files = directory.listFiles();
         if (files != null) {
             for (File file : files) {
                 if (file.isFile()) {
                     String imagePath = file.getAbsolutePath();
                     double[] dummyFeature = new double[] {1.0};
-//                    double[] feature = ;
-                    updateData(context, jsonFilename, "imagePath", imagePath, "feature", dummyFeature);
+
+                    Bitmap bitmap = BitmapFactory.decodeFile(imagePath);
+
+
+                    Log.d("image", "null"+imagePath);
+
+                    Bitmap bitmapResized = Bitmap.createScaledBitmap(bitmap, 256, 256, false);
+                    sceneSegmentation.initialize(context);
+                    List<Double> score = sceneSegmentation.inference(bitmapResized);
+                    updateData(context, jsonFilename, "imagePath", imagePath, "feature", score);
+
                 }
             }
         }
+        readData(context, jsonFilename);
     }
 
     private boolean isImageFile(String fileName) {
@@ -141,14 +161,14 @@ public class ReceiverFragment extends Fragment {
         return lowerCaseName.endsWith(".jpg") || lowerCaseName.endsWith(".jpeg") || lowerCaseName.endsWith(".png");
     }
 
-    public void updateData(Context context, String filename, String newLabel1, String newData1, String newLabel2, double[] newData2) {
+    public void updateData(Context context, String filename, String newLabel1, String newData1, String newLabel2, List<Double> newData2) {
         try {
             // 기존 JSON 데이터 불러오기
             JSONArray dataArray = loadData(context, filename);
             if (dataArray == null) {
                 dataArray = new JSONArray();
             }
-//            System.out.println(dataArray.toString(4)); // Prints the JSON Object with indentation for readability
+           // System.out.println(dataArray.toString(4)); // Prints the JSON Object with indentation for readability
             // 새 엔트리 생성
             JSONObject newEntry = new JSONObject();
             newEntry.put(newLabel1, newData1);
@@ -159,6 +179,7 @@ public class ReceiverFragment extends Fragment {
 
             // 업데이트된 데이터 저장
             saveData(context, filename, dataArray);
+            Log.d("json", "data saving finished");
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -174,6 +195,26 @@ public class ReceiverFragment extends Fragment {
             e.printStackTrace();
         }
     }
+    public String readData(Context context, String filename) {
+        String result = null;
+        try {
+            FileInputStream fis = context.openFileInput(filename);
+            InputStreamReader isr = new InputStreamReader(fis);
+            BufferedReader bufferedReader = new BufferedReader(isr);
+            StringBuilder sb = new StringBuilder();
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+                sb.append(line);
+            }
+            result = sb.toString();
+            fis.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        System.out.println(result);
+        return result;
+    }
+
     public JSONArray loadData(Context context, String filename) {
         try {
             FileInputStream fis = context.openFileInput(filename);

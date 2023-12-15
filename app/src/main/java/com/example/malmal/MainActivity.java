@@ -36,7 +36,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    private SceneSegmentation sceneSegmentation;
+    private SceneSegmentation sceneSegmentation = new SceneSegmentation();
     private AppBarConfiguration appBarConfiguration;
     private ActivityMainBinding binding;
     private static final int MY_PERMISSIONS_REQUEST_STORAGE = 1;
@@ -68,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
         appBarConfiguration = new AppBarConfiguration.Builder(navController.getGraph()).build();
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
 
-
+        sceneSegmentation.initialize(this);
 
 
         binding.fab.setOnClickListener(new View.OnClickListener() {

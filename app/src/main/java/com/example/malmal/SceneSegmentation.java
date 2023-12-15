@@ -23,12 +23,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-
+import java.util.stream.Collectors;
 
 
 class SceneSegmentation {
     int[] count = new int[21];
-    List<Double> score = new ArrayList<>();
+    List<Double> scoreList = new ArrayList<>();
     private Context context;
     Module module = null;
     //Bitmap bitmap = null;
@@ -57,7 +57,7 @@ class SceneSegmentation {
                 TensorImageUtils.TORCHVISION_NORM_MEAN_RGB,
                 TensorImageUtils.TORCHVISION_NORM_STD_RGB);
         final float[] inputs = inputTensor.getDataAsFloatArray();
-        Log.d("SceneSegmentation", "model forward started");
+
         Map<String, IValue> outTensors =
                 module.forward(IValue.from(inputTensor)).toDictStringKey();
 
@@ -86,22 +86,24 @@ class SceneSegmentation {
         }
         double size = width * height;
         for (int i = 0; i < 21; i++){
-            score.set(i, count[i] / size);
+            double temp = count[i]/size;
+            scoreList.add(temp);
+
 
         }
 
-        String[] stringArray = new String[21];
-        for (int i = 0; i < 21; i++) {
-            stringArray[i] = String.valueOf(score.get(i));
-        }
+        String scoreString = scoreList.stream()
+                .map(Object::toString)
+                .collect(Collectors.joining(","));
+
 
 
         //Bitmap bmpSegmentation = Bitmap.createScaledBitmap(bitmap, width, height, true);
         //Bitmap outputBitmap = bmpSegmentation.copy(bmpSegmentation.getConfig(), true);
         //outputBitmap.setPixels(intValues, 0, outputBitmap.getWidth(), 0, 0, outputBitmap.getWidth(), outputBitmap.getHeight());
-        Log.d("SceneSegmentation", Arrays.toString(stringArray));
+        Log.d("SceneSegmentation",scoreString);
 
-        return score;
+        return scoreList;
 
 
     }
