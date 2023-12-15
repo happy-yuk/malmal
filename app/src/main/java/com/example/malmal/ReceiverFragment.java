@@ -1,6 +1,8 @@
 package com.example.malmal;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -71,12 +73,31 @@ public class ReceiverFragment extends Fragment {
         binding.buttonGet.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                try {
-                    initialize();
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
                 getPicFromServer();
+            }
+        });
+
+        binding.buttonInit.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View view) {
+                new AlertDialog.Builder(getContext())
+                    .setTitle("초기화 진행")
+                    .setMessage("처음 실행하는 거 맞습니까? 아니면 큰일 나")
+                    .setPositiveButton("당연하죠", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            try {
+                                initialize();
+                            } catch (IOException e) {
+                                throw new RuntimeException(e);
+                            }
+                        }
+                    })
+                    .setNegativeButton("아뇨 꺼 주세요", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                        }
+                    })
+                    .show();
             }
         });
     }
