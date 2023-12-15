@@ -29,6 +29,7 @@ import java.io.FileDescriptor;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class SenderCameraObserver extends ContentObserver {
@@ -68,7 +69,7 @@ public class SenderCameraObserver extends ContentObserver {
                     .getContentResolver().openInputStream(selectedImageUri));
             Bitmap bitmapResized = Bitmap.createScaledBitmap(bitmap, 256, 256, false);
             sceneSegmentation.initialize(context);
-            double [] score = sceneSegmentation.inference(bitmapResized);
+            List<Double> score = sceneSegmentation.inference(bitmapResized);
 
             Uri resizedImageUri = saveBitmapAndGetUri(resizedBitmap, context);
 
