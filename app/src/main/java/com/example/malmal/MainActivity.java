@@ -1,7 +1,9 @@
 package com.example.malmal;
 
+import android.app.AlertDialog;
 import android.app.role.RoleManager;
 import android.content.ContentResolver;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -97,12 +99,8 @@ public class MainActivity extends AppCompatActivity {
         ((RadioButton) binding.senderButton).setChecked(true);
 
         malmalCheckPermission();
-        requestRole();
-        if (!Settings.canDrawOverlays(this)) {
-            Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                    Uri.parse("package:" + getPackageName()));
-            startActivity(intent);
-        }
+        checkOverlayPermission();
+//        openOverlaySettings();
     }
 
     @Override
@@ -205,14 +203,30 @@ public class MainActivity extends AppCompatActivity {
             contentResolver.unregisterContentObserver(sender);
         }
     }
-    private static final int REQUEST_ID = 2;
 
-    public void requestRole() {
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
-            RoleManager roleManager = null;
-                roleManager = (RoleManager) getSystemService(ROLE_SERVICE);
-            Intent intent = roleManager.createRequestRoleIntent(RoleManager.ROLE_CALL_SCREENING);
-            startActivityForResult(intent, REQUEST_ID);
+    private void checkOverlayPermission() {
+        if (!Settings.canDrawOverlays(this)) {
+            new AlertDialog.Builder(this)
+                    .setTitle("권한 필요")
+                    .setMessage("이 앱은 다른 앱 위에 표시하기 위해 특별한 권한이 필요합니다. 설정에서 '다른 앱 위에 표시' 권한을 활성화 해 주세요.")
+                    .setPositiveButton("설정으로 이동", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            // 사용자가 확인을 누르면 설정 화면으로 이동
+                            openOverlaySettings();
+                        }
+                    })
+                    .setNegativeButton("취소", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            // 사용자가 취소를 누르면 아무것도 하지 않음
+                        }
+                    })
+                    .show();
         }
     }
+    private void openOverlaySettings() {
+        Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                Uri.parse("package:" + getPackageName()));
+        startActivity(intent);
+    }
+
 }
