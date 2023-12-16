@@ -41,6 +41,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -117,7 +119,7 @@ public class ReceiverFragment extends Fragment {
         FirebaseDatabase database = FirebaseDatabase.getInstance("https://malmal-f11e9-default-rtdb.asia-southeast1.firebasedatabase.app");
         DatabaseReference databaseRef = database.getReference("image_metadata");
         Query lastImageQuery = databaseRef.orderByChild("timestamp").limitToLast(1);
-
+        List<Double> vector;
         lastImageQuery.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -129,7 +131,6 @@ public class ReceiverFragment extends Fragment {
                     String imagePath = imageSnapshot.child("path").getValue(String.class);
                     FirebaseStorage storage = FirebaseStorage.getInstance();
                     StorageReference imageRef = storage.getReference().child(imagePath);
-
                     imageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                         @Override
                         public void onSuccess(Uri uri) {
@@ -164,7 +165,7 @@ public class ReceiverFragment extends Fragment {
     private void initialize() throws IOException {
         File downloadsFolder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
         File naverMyBoxFolder = new File(downloadsFolder, "NAVER MYBOX");
-        updatePhotosInfo(getContext(), naverMyBoxFolder, "test_2.json");
+        updatePhotosInfo(getContext(), naverMyBoxFolder, "test_4.json");
     }
 
     public void updatePhotosInfo(Context context, File directory, String jsonFilename) throws IOException {
@@ -178,7 +179,6 @@ public class ReceiverFragment extends Fragment {
 
                     Bitmap bitmap = BitmapFactory.decodeFile(imagePath);
 
-
                     Log.d("image", "null"+imagePath);
 
                     Bitmap bitmapResized = Bitmap.createScaledBitmap(bitmap, 256, 256, false);
@@ -188,7 +188,7 @@ public class ReceiverFragment extends Fragment {
                 }
             }
         }
-        readData(context, jsonFilename);
+
     }
 
     private boolean isImageFile(String fileName) {
@@ -230,8 +230,9 @@ public class ReceiverFragment extends Fragment {
             e.printStackTrace();
         }
     }
-    public String readData(Context context, String filename) {
-        String result = null;
+    public List<Double> readFeatureData(Context context, String filename) {
+        List<Double> featureList = new ArrayList<>();
+
         try {
             FileInputStream fis = context.openFileInput(filename);
             InputStreamReader isr = new InputStreamReader(fis);
@@ -241,13 +242,39 @@ public class ReceiverFragment extends Fragment {
             while ((line = bufferedReader.readLine()) != null) {
                 sb.append(line);
             }
-            result = sb.toString();
             fis.close();
-        } catch (IOException e) {
+
+            // Parse the JSON array
+            JSONArray jsonArray = new JSONArray(sb.toString());
+
+            // Extract the "feature" values
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
+                String featureString = jsonObject.getString("feature");
+                // Convert the featureString to a List<Double>
+                List<Double> featureValues = convertFeatureStringToList(featureString);
+                // Add the feature values to the overall list
+                System.out.println(featureValues);
+            }
+        } catch (IOException | JSONException e) {
             e.printStackTrace();
         }
-        System.out.println(result);
-        return result;
+
+        return featureList;
+    }
+
+    private List<Double> convertFeatureStringToList(String featureString) {
+        List<Double> featureValues = new ArrayList<>();
+        try {
+            JSONArray featureArray = new JSONArray(featureString);
+            for (int i = 0; i < featureArray.length(); i++) {
+                double value = featureArray.getDouble(i);
+                featureValues.add(value);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return featureValues;
     }
 
     public JSONArray loadData(Context context, String filename) {

@@ -28,7 +28,6 @@ import java.util.stream.Collectors;
 
 class SceneSegmentation {
     int[] count = new int[21];
-    List<Double> scoreList = new ArrayList<>();
     private Context context;
     Module module = null;
     //Bitmap bitmap = null;
@@ -44,15 +43,13 @@ class SceneSegmentation {
             module = Module.load(assetFilePath(context, "deeplabv3_scripted.pt"));
         } catch (IOException e) {
             Log.e("SceneSegmentation", "Error loading model!", e);
-
         }
         Log.d("SceneSegmentation", "model loaded");
-
     }
 
     public List<Double> inference(Bitmap bitmap) throws IOException {
         Log.d("SceneSegmentation", "inference started");
-       // Bitmap bitmap = BitmapFactory.decodeStream(context.getAssets().open("deeplab.jpg"));
+
         final Tensor inputTensor = TensorImageUtils.bitmapToFloat32Tensor(bitmap,
                 TensorImageUtils.TORCHVISION_NORM_MEAN_RGB,
                 TensorImageUtils.TORCHVISION_NORM_STD_RGB);
@@ -71,7 +68,6 @@ class SceneSegmentation {
 
         for (int j = 0; j < width; j++) {
             for (int k = 0; k < height; k++) {
-                // maxi: the index of the 21 CLASSNUM with the max probability
                 int maxi = 0, maxj = 0, maxk = 0;
                 double maxnum = -100000.0;
                 for (int i=0; i < CLASSNUM; i++) {
@@ -84,43 +80,21 @@ class SceneSegmentation {
 
             }
         }
+
+        List<Double> scoreList = new ArrayList<>();
         double size = width * height;
         for (int i = 0; i < 21; i++){
             double temp = count[i]/size;
             scoreList.add(temp);
-
-
         }
 
         String scoreString = scoreList.stream()
                 .map(Object::toString)
                 .collect(Collectors.joining(","));
 
-
-
-        //Bitmap bmpSegmentation = Bitmap.createScaledBitmap(bitmap, width, height, true);
-        //Bitmap outputBitmap = bmpSegmentation.copy(bmpSegmentation.getConfig(), true);
-        //outputBitmap.setPixels(intValues, 0, outputBitmap.getWidth(), 0, 0, outputBitmap.getWidth(), outputBitmap.getHeight());
         Log.d("SceneSegmentation",scoreString);
 
         return scoreList;
-
-
-    }
-    private static String arrayToString(double[] array) {
-        StringBuilder result = new StringBuilder("[");
-
-        for (int i = 0; i < array.length; i++) {
-            result.append(array[i]);
-
-            if (i < array.length - 1) {
-                result.append(", ");
-            }
-        }
-
-        result.append("]");
-
-        return result.toString();
     }
 
     public static String assetFilePath(Context context, String assetName) throws IOException {
