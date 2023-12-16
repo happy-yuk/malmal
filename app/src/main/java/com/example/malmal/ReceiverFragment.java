@@ -51,6 +51,8 @@ public class ReceiverFragment extends Fragment {
     private FragmentReceiverBinding binding;
     private SceneSegmentation sceneSegmentation = new SceneSegmentation();
 
+    private String jsonFilename = "10.json";
+
     @Override
     public View onCreateView(
             LayoutInflater inflater, ViewGroup container,
@@ -77,8 +79,9 @@ public class ReceiverFragment extends Fragment {
             public void onClick(View view) {
                 getPicFromServer(new OnImageFetchedListener() {
                     @Override
-                    public void onImageFetched(List<Double> vector, String imagePath) {
-                        // 여기에서 vector와 imagePath 사용
+                    public void onImageFetched(List<Double> grandmaVector, String imagePath) {
+                        readFeatureData(context, grandmaVector );
+
                     }
                 });
             }
@@ -127,7 +130,6 @@ public class ReceiverFragment extends Fragment {
                     GenericTypeIndicator<List<Double>> genericTypeIndicator = new GenericTypeIndicator<List<Double>>() {
                     };
                     List<Double> vector = imageSnapshot.child("featureVec").getValue(genericTypeIndicator);
-                    System.out.println(cosineSimilarity(vector, vector));
                     String imagePath = imageSnapshot.child("path").getValue(String.class);
                     FirebaseStorage storage = FirebaseStorage.getInstance();
                     StorageReference imageRef = storage.getReference().child(imagePath);
@@ -165,10 +167,10 @@ public class ReceiverFragment extends Fragment {
     private void initialize() throws IOException {
         File downloadsFolder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
         File naverMyBoxFolder = new File(downloadsFolder, "NAVER MYBOX");
-        updatePhotosInfo(getContext(), naverMyBoxFolder, "test_4.json");
+        updatePhotosInfo(getContext(), naverMyBoxFolder);
     }
 
-    public void updatePhotosInfo(Context context, File directory, String jsonFilename) throws IOException {
+    public void updatePhotosInfo(Context context, File directory) throws IOException {
         this.context = context;
         File[] files = directory.listFiles();
         if (files != null) {
@@ -184,7 +186,7 @@ public class ReceiverFragment extends Fragment {
                     Bitmap bitmapResized = Bitmap.createScaledBitmap(bitmap, 256, 256, false);
                     sceneSegmentation.initialize(context);
                     List<Double> score = sceneSegmentation.inference(bitmapResized);
-                    updateData(context, jsonFilename, "imagePath", imagePath, "feature", score);
+                    updateData(context,"imagePath", imagePath, "feature", score);
                 }
             }
         }
@@ -196,10 +198,10 @@ public class ReceiverFragment extends Fragment {
         return lowerCaseName.endsWith(".jpg") || lowerCaseName.endsWith(".jpeg") || lowerCaseName.endsWith(".png");
     }
 
-    public void updateData(Context context, String filename, String newLabel1, String newData1, String newLabel2, List<Double> newData2) {
+    public void updateData(Context context, String newLabel1, String newData1, String newLabel2, List<Double> newData2) {
         try {
             // 기존 JSON 데이터 불러오기
-            JSONArray dataArray = loadData(context, filename);
+            JSONArray dataArray = loadData(context, jsonFilename);
             if (dataArray == null) {
                 dataArray = new JSONArray();
             }
@@ -213,7 +215,7 @@ public class ReceiverFragment extends Fragment {
             dataArray.put(newEntry);
 
             // 업데이트된 데이터 저장
-            saveData(context, filename, dataArray);
+            saveData(context, dataArray);
             Log.d("json", "data saving finished");
 
         } catch (JSONException e) {
@@ -221,20 +223,22 @@ public class ReceiverFragment extends Fragment {
         }
     }
 
-    public void saveData(Context context, String filename, JSONArray data) {
+    public void saveData(Context context, JSONArray data) {
         try {
-            FileOutputStream fos = context.openFileOutput(filename, Context.MODE_PRIVATE);
+            FileOutputStream fos = context.openFileOutput(jsonFilename, Context.MODE_PRIVATE);
             fos.write(data.toString().getBytes());
             fos.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-    public List<Double> readFeatureData(Context context, String filename) {
-        List<Double> featureList = new ArrayList<>();
+    public void readFeatureData(Context context, List<Double> grandmaVector) {
+
+        List<Double> similarity = new ArrayList<>();
+        List<String> filePath = new ArrayList<>();
 
         try {
-            FileInputStream fis = context.openFileInput(filename);
+            FileInputStream fis = context.openFileInput(jsonFilename);
             InputStreamReader isr = new InputStreamReader(fis);
             BufferedReader bufferedReader = new BufferedReader(isr);
             StringBuilder sb = new StringBuilder();
@@ -246,21 +250,23 @@ public class ReceiverFragment extends Fragment {
 
             // Parse the JSON array
             JSONArray jsonArray = new JSONArray(sb.toString());
-
+            System.out.println("grandMa" + grandmaVector);
             // Extract the "feature" values
             for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
                 String featureString = jsonObject.getString("feature");
+                String pathString = jsonObject.getString("imagePath");
                 // Convert the featureString to a List<Double>
+                filePath.add(pathString);
                 List<Double> featureValues = convertFeatureStringToList(featureString);
-                // Add the feature values to the overall list
-                System.out.println(featureValues);
+                double score = cosineSimilarity(featureValues, grandmaVector);
+                System.out.println(i +" "+ score);
             }
         } catch (IOException | JSONException e) {
             e.printStackTrace();
         }
 
-        return featureList;
+
     }
 
     private List<Double> convertFeatureStringToList(String featureString) {
