@@ -248,6 +248,7 @@ public class ReceiverFragment extends Fragment {
         List<Double> similarity = new ArrayList<>();
         List<String> filePath = new ArrayList<>();
 
+
         try {
             FileInputStream fis = context.openFileInput(jsonFilename);
             InputStreamReader isr = new InputStreamReader(fis);
