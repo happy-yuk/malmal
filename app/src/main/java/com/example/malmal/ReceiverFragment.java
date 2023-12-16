@@ -256,7 +256,7 @@ public class ReceiverFragment extends Fragment {
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
                 String featureString = jsonObject.getString("feature");
                 String pathString = jsonObject.getString("imagePath");
-                // Convert the featureString to a List<Double>
+
                 filePath.add(pathString);
                 List<Double> featureValues = convertFeatureStringToList(featureString);
                 double score = cosineSimilarity(featureValues, grandmaVector);
