@@ -52,7 +52,7 @@ public class ReceiverFragment extends Fragment {
     private FragmentReceiverBinding binding;
     private SceneSegmentation sceneSegmentation = new SceneSegmentation();
 
-    private String jsonFilename = "14.json";
+    private String jsonFilename = "inferenceData.json";
 
     @Override
     public View onCreateView(
