@@ -73,7 +73,12 @@ public class ReceiverFragment extends Fragment {
         binding.buttonGet.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                getPicFromServer();
+                getPicFromServer(new OnImageFetchedListener() {
+                    @Override
+                    public void onImageFetched(List<Double> vector, String imagePath) {
+                        // 여기에서 vector와 imagePath 사용
+                    }
+                });
             }
         });
 
@@ -108,7 +113,7 @@ public class ReceiverFragment extends Fragment {
         binding = null;
     }
 
-    public void getPicFromServer() {
+    public void getPicFromServer(OnImageFetchedListener listener) {
         FirebaseDatabase database = FirebaseDatabase.getInstance("https://malmal-f11e9-default-rtdb.asia-southeast1.firebasedatabase.app");
         DatabaseReference databaseRef = database.getReference("image_metadata");
         Query lastImageQuery = databaseRef.orderByChild("timestamp").limitToLast(1);
@@ -137,6 +142,10 @@ public class ReceiverFragment extends Fragment {
                             // 오류 처리
                         }
                     });
+                    if (listener != null) {
+                        listener.onImageFetched(vector, imagePath);
+                    }
+
                 }
             }
 
