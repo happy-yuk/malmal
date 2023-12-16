@@ -1,6 +1,8 @@
 package com.example.malmal;
 
+import android.app.role.RoleManager;
 import android.content.ContentResolver;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -94,6 +96,7 @@ public class MainActivity extends AppCompatActivity {
         ((RadioButton) binding.senderButton).setChecked(true);
 
         malmalCheckPermission();
+        requestRole();
     }
 
     @Override
@@ -148,6 +151,30 @@ public class MainActivity extends AppCompatActivity {
             Log.d("malmalCheckPermission", "You need WRITE permission");
             permissionsNeeded.add(android.Manifest.permission.WRITE_EXTERNAL_STORAGE);
         }
+        if (ContextCompat.checkSelfPermission(this,
+                android.Manifest.permission.READ_PHONE_STATE)
+                != PackageManager.PERMISSION_GRANTED) {
+            Log.d("malmalCheckPermission", "You need permission");
+            permissionsNeeded.add(android.Manifest.permission.READ_PHONE_STATE);
+        }
+        if (ContextCompat.checkSelfPermission(this,
+                android.Manifest.permission.READ_CONTACTS)
+                != PackageManager.PERMISSION_GRANTED) {
+            Log.d("malmalCheckPermission", "You need permission");
+            permissionsNeeded.add(android.Manifest.permission.READ_CONTACTS);
+        }
+        if (ContextCompat.checkSelfPermission(this,
+                android.Manifest.permission.WRITE_CONTACTS)
+                != PackageManager.PERMISSION_GRANTED) {
+            Log.d("malmalCheckPermission", "You need permission");
+            permissionsNeeded.add(android.Manifest.permission.WRITE_CONTACTS);
+        }
+//        if (ContextCompat.checkSelfPermission(this,
+//                android.Manifest.permission.READ_CALL_LOG)
+//                != PackageManager.PERMISSION_GRANTED) {
+//            Log.d("malmalCheckPermission", "You need permission");
+//            permissionsNeeded.add(android.Manifest.permission.READ_CALL_LOG);
+//        }
 
         if (!permissionsNeeded.isEmpty()) {
             ActivityCompat.requestPermissions(this,
@@ -170,6 +197,16 @@ public class MainActivity extends AppCompatActivity {
         } else {
             contentResolver.registerContentObserver(uri, true, receiver);
             contentResolver.unregisterContentObserver(sender);
+        }
+    }
+    private static final int REQUEST_ID = 2;
+
+    public void requestRole() {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+            RoleManager roleManager = null;
+                roleManager = (RoleManager) getSystemService(ROLE_SERVICE);
+            Intent intent = roleManager.createRequestRoleIntent(RoleManager.ROLE_CALL_SCREENING);
+            startActivityForResult(intent, REQUEST_ID);
         }
     }
 }
