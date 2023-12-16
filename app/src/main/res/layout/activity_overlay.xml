@@ -9,7 +9,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:src="@drawable/your_image1" /> <!-- 첫 번째 이미지 -->
+        /> <!-- 첫 번째 이미지 -->
 
     <ImageView
         android:id="@+id/imageView2"
@@ -18,6 +18,6 @@
         android:layout_below="@id/imageView1"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="20dp"
-        android:src="@drawable/your_image2" /> <!-- 두 번째 이미지 -->
+        /> <!-- 두 번째 이미지 -->
 
 </RelativeLayout>
