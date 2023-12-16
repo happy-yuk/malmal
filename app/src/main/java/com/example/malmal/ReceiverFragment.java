@@ -17,6 +17,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.bumptech.glide.Glide;
 import com.example.malmal.databinding.FragmentReceiverBinding;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -51,7 +52,7 @@ public class ReceiverFragment extends Fragment {
     private FragmentReceiverBinding binding;
     private SceneSegmentation sceneSegmentation = new SceneSegmentation();
 
-    private String jsonFilename = "_10.json";
+    private String jsonFilename = "14.json";
 
     @Override
     public View onCreateView(
@@ -81,7 +82,10 @@ public class ReceiverFragment extends Fragment {
                     @Override
                     public void onImageFetched(List<Double> grandmaVector, String imagePath) {
                         readFeatureData(getContext(), grandmaVector);
-
+                        String maxFilePath = readFeatureData(context, grandmaVector);
+                        System.out.println(maxFilePath);
+                        Bitmap bitmap = BitmapFactory.decodeFile(maxFilePath);
+                        binding.inferredImage.setImageBitmap(bitmap);
                     }
                 });
             }
@@ -137,7 +141,8 @@ public class ReceiverFragment extends Fragment {
                         @Override
                         public void onSuccess(Uri uri) {
                             // 이제 uri를 사용하여 Picasso로 이미지 로드
-                            loadImageWithPicasso(uri.toString());
+                            loadReceiveImageWithPicasso(uri.toString());
+                            Log.d("view", "Received Image disaplayed");
                         }
                     }).addOnFailureListener(new OnFailureListener() {
                         @Override
@@ -160,8 +165,12 @@ public class ReceiverFragment extends Fragment {
 
     }
 
-    private void loadImageWithPicasso(String imageUrl) {
+    private void loadReceiveImageWithPicasso(String imageUrl) {
         Picasso.get().load(imageUrl).transform(new RotateTransformation(90)).into(binding.receivedImage);
+    }
+
+    private void loadInferenceImageWithPicasso(String filePath) {
+        Picasso.get().load(filePath).transform(new RotateTransformation(90)).into(binding.inferredImage);
     }
 
     private void initialize() throws IOException {
@@ -236,6 +245,7 @@ public class ReceiverFragment extends Fragment {
 
         List<Double> similarity = new ArrayList<>();
         List<String> filePath = new ArrayList<>();
+
 
         try {
             FileInputStream fis = getContext().openFileInput(jsonFilename);
