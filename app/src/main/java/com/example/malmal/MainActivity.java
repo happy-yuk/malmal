@@ -228,5 +228,4 @@ public class MainActivity extends AppCompatActivity {
                 Uri.parse("package:" + getPackageName()));
         startActivity(intent);
     }
-
 }

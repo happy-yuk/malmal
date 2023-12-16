@@ -64,8 +64,8 @@ public class SenderFragment extends Fragment {
         binding.buttonGet.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d("Gallery", "tired");
-                sendPicToServer();
+//                Log.d("Gallery", "tired");
+//                sendPicToServer(); // disabled to eliminate confusion
             }
         });
     }

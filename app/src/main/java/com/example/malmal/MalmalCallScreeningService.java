@@ -1,9 +1,11 @@
 package com.example.malmal;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.ContactsContract;
+import android.provider.Settings;
 import android.telecom.Call;
 import android.telecom.CallScreeningService;
 import android.telecom.Connection;
@@ -41,6 +43,15 @@ public class MalmalCallScreeningService extends CallScreeningService {
 
                 if (phoneNumber != null) {
                     Log.d("INCOMMING PHONE NUMBER", ""+phoneNumber);
+                    if (phoneNumber.toString().equals("01028815298")) {
+                        if (Settings.canDrawOverlays(this)) {
+                            Intent intent = new Intent(this, OverlayActivity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK); // 플래그 추가
+                            this.startActivity(intent);
+                        } else {
+//                           권한 얻기
+                        }
+                    }
                 }
 
                 String caller = null;

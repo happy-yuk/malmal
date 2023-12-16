@@ -51,7 +51,7 @@ public class ReceiverFragment extends Fragment {
     private FragmentReceiverBinding binding;
     private SceneSegmentation sceneSegmentation = new SceneSegmentation();
 
-    private String jsonFilename = "10.json";
+    private String jsonFilename = "_10.json";
 
     @Override
     public View onCreateView(
@@ -80,7 +80,7 @@ public class ReceiverFragment extends Fragment {
                 getPicFromServer(new OnImageFetchedListener() {
                     @Override
                     public void onImageFetched(List<Double> grandmaVector, String imagePath) {
-                        readFeatureData(context, grandmaVector );
+                        readFeatureData(getContext(), grandmaVector);
 
                     }
                 });
@@ -238,7 +238,7 @@ public class ReceiverFragment extends Fragment {
         List<String> filePath = new ArrayList<>();
 
         try {
-            FileInputStream fis = context.openFileInput(jsonFilename);
+            FileInputStream fis = getContext().openFileInput(jsonFilename);
             InputStreamReader isr = new InputStreamReader(fis);
             BufferedReader bufferedReader = new BufferedReader(isr);
             StringBuilder sb = new StringBuilder();

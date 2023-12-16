@@ -4,20 +4,25 @@
     android:layout_height="match_parent"
     android:background="#CC000000"> <!-- 반투명 배경 -->
 
-    <ImageView
-        android:id="@+id/imageView1"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        /> <!-- 첫 번째 이미지 -->
+        android:orientation="horizontal"
+        android:layout_centerInParent="true">
 
-    <ImageView
-        android:id="@+id/imageView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/imageView1"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="20dp"
-        /> <!-- 두 번째 이미지 -->
+        <ImageView
+            android:id="@+id/inferredImage"
+            android:layout_width="0dp"
+            android:layout_height="301dp"
+            android:layout_weight="1"
+            android:src="@drawable/ic_launcher_background" />
+
+        <ImageView
+            android:id="@+id/receivedImage"
+            android:layout_width="0dp"
+            android:layout_height="301dp"
+            android:layout_weight="1"
+            android:src="@drawable/ic_launcher_background" />
+    </LinearLayout>
 
 </RelativeLayout>
