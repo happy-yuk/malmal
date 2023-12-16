@@ -37,7 +37,7 @@ import java.util.List;
 
 public class OverlayActivity extends AppCompatActivity {
     private ActivityOverlayBinding binding;
-    private String jsonFilename = "_10.json";
+    private String jsonFilename = "inferenceData.json";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -151,7 +151,6 @@ public class OverlayActivity extends AppCompatActivity {
         return featureValues;
     }
     private void loadImageWithPicasso(String imageUrl) {
-        Picasso.get().load(imageUrl).transform(new RotateTransformation(90)).into(binding.receivedImage);
+        Picasso.get().load(imageUrl).transform(new RotateTransformation(0)).into(binding.receivedImage);
     }
-
 }

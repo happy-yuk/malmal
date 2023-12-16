@@ -166,7 +166,7 @@ public class ReceiverFragment extends Fragment {
     }
 
     private void loadReceiveImageWithPicasso(String imageUrl) {
-        Picasso.get().load(imageUrl).transform(new RotateTransformation(90)).into(binding.receivedImage);
+        Picasso.get().load(imageUrl).transform(new RotateTransformation(0)).into(binding.receivedImage);
     }
 
     private void loadInferenceImageWithPicasso(String filePath) {
