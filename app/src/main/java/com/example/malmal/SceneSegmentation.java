@@ -83,7 +83,7 @@ class SceneSegmentation {
 
         List<Double> scoreList = new ArrayList<>();
         double size = width * height;
-        for (int i = 0; i < 21; i++){
+        for (int i = 1; i < 21; i++){
             double temp = count[i]/size;
             scoreList.add(temp);
         }
