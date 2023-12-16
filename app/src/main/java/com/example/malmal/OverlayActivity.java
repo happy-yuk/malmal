@@ -3,6 +3,8 @@ package com.example.malmal;
 import static com.example.malmal.ReceiverFragment.cosineSimilarity;
 import static com.example.malmal.ReceiverFragment.findIndexOfMax;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -47,7 +49,11 @@ public class OverlayActivity extends AppCompatActivity {
         getPicFromServer(new OnImageFetchedListener() {
             @Override
             public void onImageFetched(List<Double> grandmaVector, String imagePath) {
-                readFeatureData(grandmaVector);
+                String maxFilePath = readFeatureData(grandmaVector);
+                System.out.println(maxFilePath);
+                Bitmap bitmap = BitmapFactory.decodeFile(maxFilePath);
+                binding.inferredImage.setImageBitmap(bitmap);
+
 
 //        binding.inferredImage.setImageResource(R.drawable.your_image1);
 //        binding.receivedImage.setImageResource(R.drawable.your_image2);
