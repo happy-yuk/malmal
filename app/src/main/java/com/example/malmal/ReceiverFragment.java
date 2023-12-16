@@ -232,7 +232,7 @@ public class ReceiverFragment extends Fragment {
             e.printStackTrace();
         }
     }
-    public void readFeatureData(Context context, List<Double> grandmaVector) {
+    public String readFeatureData(Context context, List<Double> grandmaVector) {
 
         List<Double> similarity = new ArrayList<>();
         List<String> filePath = new ArrayList<>();
@@ -260,12 +260,18 @@ public class ReceiverFragment extends Fragment {
                 filePath.add(pathString);
                 List<Double> featureValues = convertFeatureStringToList(featureString);
                 double score = cosineSimilarity(featureValues, grandmaVector);
+                similarity.add(score);
                 System.out.println(i +" "+ score);
             }
         } catch (IOException | JSONException e) {
             e.printStackTrace();
         }
 
+        int maxIndex = findIndexOfMax(similarity);
+
+        String maxFilePath = filePath.get(maxIndex);
+
+        return maxFilePath;
 
     }
 
@@ -325,5 +331,23 @@ public class ReceiverFragment extends Fragment {
         }
 
         return dotProduct / (Math.sqrt(normA) * Math.sqrt(normB));
+    }
+
+    public static int findIndexOfMax(List<Double> doubleList) {
+        if (doubleList == null || doubleList.isEmpty()) {
+            throw new IllegalArgumentException("List is either null or empty");
+        }
+
+        int maxIndex = 0;
+        double maxValue = doubleList.get(0);
+
+        for (int i = 1; i < doubleList.size(); i++) {
+            if (doubleList.get(i) > maxValue) {
+                maxValue = doubleList.get(i);
+                maxIndex = i;
+            }
+        }
+
+        return maxIndex;
     }
 }
