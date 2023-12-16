@@ -69,7 +69,7 @@ public class SenderCameraObserver extends ContentObserver {
             Bitmap bitmap = BitmapFactory.decodeStream(context
                     .getContentResolver().openInputStream(selectedImageUri));
             Bitmap bitmapResized = Bitmap.createScaledBitmap(bitmap, 256, 256, false);
-            //sceneSegmentation.initialize(context);
+            sceneSegmentation.initialize(context);
             List<Double> score = sceneSegmentation.inference(bitmapResized);
 
             Uri resizedImageUri = saveBitmapAndGetUri(resizedBitmap, context);
