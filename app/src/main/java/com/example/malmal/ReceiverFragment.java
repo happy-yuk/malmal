@@ -335,11 +335,7 @@ public class ReceiverFragment extends Fragment {
             normA += Math.pow(list1.get(i), 2);
             normB += Math.pow(list2.get(i), 2);
         }
-
-        if (normA == 0 || normB == 0) {
-            throw new IllegalArgumentException("One of the vectors is zero, cannot compute similarity.");
-        }
-
+        
         return dotProduct / (Math.sqrt(normA) * Math.sqrt(normB));
     }
 

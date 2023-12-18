@@ -45,8 +45,17 @@ public class MalmalCallScreeningService extends CallScreeningService {
                     Log.d("INCOMMING PHONE NUMBER", ""+phoneNumber);
                     if (phoneNumber.toString().equals("01028815298")) {
                         if (Settings.canDrawOverlays(this)) {
+                            String contactName = getContactName(phoneNumber);
                             Intent intent = new Intent(this, OverlayActivity.class);
-                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK); // 플래그 추가
+                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
+                                intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                            }
+                            intent.putExtra("CALLER_NAME", contactName); // 데이터 전달
                             this.startActivity(intent);
                         } else {
 //                           권한 얻기

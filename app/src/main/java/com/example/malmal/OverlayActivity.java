@@ -3,9 +3,12 @@ package com.example.malmal;
 import static com.example.malmal.ReceiverFragment.cosineSimilarity;
 import static com.example.malmal.ReceiverFragment.findIndexOfMax;
 
+import android.app.KeyguardManager;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -43,9 +46,22 @@ public class OverlayActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
+            setShowWhenLocked(true);
+            setTurnScreenOn(true);
+        }
+        KeyguardManager keyguardManager = (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
+        if (keyguardManager != null) {
+            keyguardManager.requestDismissKeyguard(this, null);
+        }
+
         binding = ActivityOverlayBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-
+        Bundle extras = getIntent().getExtras();
+        if (extras != null) {
+            String callerName = extras.getString("CALLER_NAME");
+            binding.callerName.setText(callerName+"님께 전화가 오고 있습니다.\n일상 얘기를 나누어 보세요!");
+        }
         getPicFromServer(new OnImageFetchedListener() {
             @Override
             public void onImageFetched(List<Double> grandmaVector, String imagePath) {
@@ -53,7 +69,6 @@ public class OverlayActivity extends AppCompatActivity {
                 System.out.println(maxFilePath);
                 Bitmap bitmap = BitmapFactory.decodeFile(maxFilePath);
                 binding.inferredImage.setImageBitmap(bitmap);
-
 
 //        binding.inferredImage.setImageResource(R.drawable.your_image1);
 //        binding.receivedImage.setImageResource(R.drawable.your_image2);
